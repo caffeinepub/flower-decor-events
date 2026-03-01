@@ -5,6 +5,7 @@ import {
   Flower,
   Heart,
   LogOut,
+  Mail,
   Menu,
   Shield,
   ShoppingCart,
@@ -73,10 +74,16 @@ export default function Navbar() {
               </div>
               <div className="flex flex-col leading-tight">
                 <span className="font-display font-bold text-lg text-gradient-gold">
-                  Flower Decor
+                  Kalapriya
                 </span>
                 <span className="text-[10px] font-body font-medium tracking-[0.15em] uppercase text-muted-foreground -mt-0.5">
-                  Events
+                  Flower Decoration
+                </span>
+                <span
+                  className="text-[9px] font-body font-medium tracking-[0.12em] uppercase -mt-0.5"
+                  style={{ color: "oklch(0.65 0.18 55)" }}
+                >
+                  Petal · Passion · Perfection
                 </span>
               </div>
             </Link>
@@ -100,6 +107,25 @@ export default function Navbar() {
                 }
               >
                 Home
+              </Link>
+              <Link
+                to="/contact"
+                className={`px-4 py-2 rounded-full text-sm font-medium font-body transition-all duration-200 flex items-center gap-1.5 ${
+                  isActive("/contact")
+                    ? "text-primary-foreground shadow-festival"
+                    : "text-foreground/70 hover:text-foreground hover:bg-muted"
+                }`}
+                style={
+                  isActive("/contact")
+                    ? {
+                        background:
+                          "linear-gradient(135deg, oklch(var(--marigold)), oklch(var(--festival-pink)))",
+                      }
+                    : {}
+                }
+              >
+                <Mail className="w-3.5 h-3.5" />
+                Contact
               </Link>
             </nav>
 
@@ -284,6 +310,26 @@ export default function Navbar() {
                 }
               >
                 Home
+              </Link>
+              <Link
+                to="/contact"
+                onClick={() => setMenuOpen(false)}
+                className={`px-4 py-2.5 rounded-xl text-sm font-medium font-body transition-all flex items-center gap-2 ${
+                  isActive("/contact")
+                    ? "text-white"
+                    : "text-foreground hover:bg-muted"
+                }`}
+                style={
+                  isActive("/contact")
+                    ? {
+                        background:
+                          "linear-gradient(135deg, oklch(var(--marigold)), oklch(var(--festival-pink)))",
+                      }
+                    : {}
+                }
+              >
+                <Mail className="w-4 h-4" />
+                Contact
               </Link>
               <Link
                 to="/favourites"

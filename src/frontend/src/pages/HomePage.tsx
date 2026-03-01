@@ -192,9 +192,25 @@ export default function HomePage() {
                   </span>
                 </h1>
 
-                <p className="font-body text-lg md:text-xl text-white/80 mb-8 leading-relaxed">
+                <p className="font-body text-lg md:text-xl text-white/80 mb-2 leading-relaxed">
                   for Every Occasion
                 </p>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.6 }}
+                  className="font-body text-base md:text-lg font-medium tracking-widest uppercase mb-8"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, oklch(0.95 0.12 80), oklch(0.85 0.16 55), oklch(0.95 0.12 80))",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  Petal · Passion · Perfection
+                </motion.p>
 
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}

@@ -10,6 +10,7 @@ import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import AdminPage from "./pages/AdminPage";
 import CategoryPage from "./pages/CategoryPage";
+import ContactPage from "./pages/ContactPage";
 import FavouritesPage from "./pages/FavouritesPage";
 import HomePage from "./pages/HomePage";
 
@@ -51,11 +52,18 @@ const favouritesRoute = createRoute({
   component: FavouritesPage,
 });
 
+const contactRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/contact",
+  component: ContactPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   categoryRoute,
   adminRoute,
   favouritesRoute,
+  contactRoute,
 ]);
 
 const router = createRouter({ routeTree });
