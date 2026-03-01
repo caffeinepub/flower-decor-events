@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fraunces — display serif for headings */
+@font-face {
+  font-family: "Fraunces";
+  src: url("/assets/fonts/Fraunces.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Plus Jakarta Sans — refined body font */
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/assets/fonts/PlusJakartaSans.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --radius: 1rem;
+
+    /* ── Warm Indian festive palette ──────────────────────────────── */
+    /* Background: warm ivory cream */
+    --background: 0.975 0.012 75;
+    /* Foreground: deep warm charcoal */
+    --foreground: 0.22 0.04 55;
+
+    /* Card: soft warm white */
+    --card: 0.99 0.008 70;
+    --card-foreground: 0.22 0.04 55;
+
+    /* Popover */
+    --popover: 0.99 0.008 70;
+    --popover-foreground: 0.22 0.04 55;
+
+    /* Primary: deep marigold / saffron orange */
+    --primary: 0.65 0.18 55;
+    --primary-foreground: 0.99 0.008 70;
+
+    /* Secondary: dusty rose pink */
+    --secondary: 0.94 0.028 30;
+    --secondary-foreground: 0.45 0.12 30;
+
+    /* Muted: light cream tones */
+    --muted: 0.945 0.02 75;
+    --muted-foreground: 0.52 0.06 60;
+
+    /* Accent: rich gold */
+    --accent: 0.82 0.12 80;
+    --accent-foreground: 0.28 0.08 60;
+
+    /* Destructive */
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 0.985 0 0;
+
+    /* Border/input: warm tinted */
+    --border: 0.88 0.03 70;
+    --input: 0.88 0.03 70;
+    --ring: 0.65 0.18 55;
+
+    /* Festival pink accent */
+    --festival-pink: 0.62 0.22 10;
+    --festival-pink-light: 0.92 0.05 10;
+    --gold: 0.78 0.14 82;
+    --gold-deep: 0.62 0.12 78;
+    --marigold: 0.72 0.19 55;
+    --rose-deep: 0.52 0.18 18;
+    --leaf-green: 0.52 0.13 148;
+
+    /* Chart colors */
+    --chart-1: 0.65 0.18 55;
+    --chart-2: 0.62 0.22 10;
+    --chart-3: 0.78 0.14 82;
+    --chart-4: 0.52 0.18 18;
+    --chart-5: 0.52 0.13 148;
+
+    /* Sidebar */
+    --sidebar: 0.22 0.04 55;
+    --sidebar-foreground: 0.975 0.012 75;
+    --sidebar-primary: 0.65 0.18 55;
+    --sidebar-primary-foreground: 0.99 0.008 70;
+    --sidebar-accent: 0.32 0.06 55;
+    --sidebar-accent-foreground: 0.975 0.012 75;
+    --sidebar-border: 0.32 0.06 55;
+    --sidebar-ring: 0.65 0.18 55;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-image:
+      radial-gradient(ellipse at 20% 0%, oklch(0.95 0.04 55 / 0.25) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, oklch(0.92 0.04 10 / 0.2) 0%, transparent 60%);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    background: linear-gradient(135deg, oklch(var(--gold)), oklch(var(--marigold)), oklch(var(--festival-pink)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-festival {
+    background: linear-gradient(135deg,
+      oklch(var(--background)) 0%,
+      oklch(0.97 0.025 55) 50%,
+      oklch(0.975 0.018 30) 100%
+    );
+  }
+
+  .card-hover {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 48px oklch(0.45 0.12 55 / 0.18), 0 8px 16px oklch(0.45 0.12 55 / 0.1);
+  }
+
+  .ornament-border {
+    border-image: linear-gradient(90deg, oklch(var(--gold)), oklch(var(--marigold)), oklch(var(--festival-pink)), oklch(var(--gold))) 1;
+  }
+}
