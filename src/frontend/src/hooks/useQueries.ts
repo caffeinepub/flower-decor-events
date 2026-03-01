@@ -118,3 +118,47 @@ export function useUpdateCategoryDescription() {
     },
   });
 }
+
+export function useInitializeAdmin() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (rawToken: string) => {
+      // Strip any accidental leading '=' or spaces from pasted tokens
+      const token = rawToken.replace(/^=+/, "").trim();
+      if (!token) throw new Error("Please enter a valid token");
+
+      // Store the token in sessionStorage so useActor picks it up on reload
+      try {
+        sessionStorage.setItem("caffeineAdminToken", token);
+      } catch {
+        // ignore storage errors
+      }
+
+      // Try calling on the current actor first
+      if (actor) {
+        try {
+          await (actor as any)._initializeAccessControlWithSecret(token);
+          return;
+        } catch {
+          // If the current actor fails (already initialized with wrong token),
+          // fall through to the reload approach
+        }
+      }
+
+      // If no actor or call failed, trigger a page reload so useActor
+      // picks up the token from sessionStorage and creates a fresh actor
+      throw new Error("__NEEDS_RELOAD__");
+    },
+    onError: (err: Error) => {
+      if (err.message === "__NEEDS_RELOAD__") {
+        // Reload will cause useActor to reinitialize with the stored token
+        window.location.reload();
+      }
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
+      void queryClient.refetchQueries({ queryKey: ["isAdmin"] });
+    },
+  });
+}

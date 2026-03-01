@@ -60,7 +60,7 @@ export default function Navbar() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 group">
+            <div className="flex items-center gap-2">
               <div className="relative">
                 <div
                   className="w-9 h-9 rounded-full flex items-center justify-center shadow-gold"
@@ -86,7 +86,7 @@ export default function Navbar() {
                   Petal · Passion · Perfection
                 </span>
               </div>
-            </Link>
+            </div>
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-1">

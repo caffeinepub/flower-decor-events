@@ -143,7 +143,7 @@ export default function HomePage() {
         <div className="relative h-[520px] md:h-[580px]">
           <img
             src="/assets/generated/hero-banner.dim_1200x500.jpg"
-            alt="Beautiful flower decorations"
+            alt=""
             className="w-full h-full object-cover"
           />
           {/* Gradient overlay */}

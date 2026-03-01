@@ -31,7 +31,7 @@ import {
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { EventCategory, EventImage } from "../backend.d";
 import { useBlobStorage } from "../hooks/useBlobStorage";
@@ -40,6 +40,7 @@ import {
   useAddImage,
   useGetCategories,
   useGetImagesByCategory,
+  useInitializeAdmin,
   useIsCallerAdmin,
   useRemoveImage,
   useUpdateCategoryDescription,
@@ -419,9 +420,32 @@ export default function AdminPage() {
   const { data: isAdmin, isLoading: adminLoading } = useIsCallerAdmin();
   const { data: categories, isLoading: catsLoading } = useGetCategories();
   const queryClient = useQueryClient();
+  const initializeAdmin = useInitializeAdmin();
+
+  const [adminToken, setAdminToken] = useState("");
+  const [tokenSuccess, setTokenSuccess] = useState(false);
 
   const isAuthenticated = !!identity;
   const isLoggingIn = loginStatus === "logging-in";
+
+  const handleClaimAdmin = async () => {
+    try {
+      await initializeAdmin.mutateAsync(adminToken);
+      setTokenSuccess(true);
+      setAdminToken("");
+      // Invalidate admin query and reload after a short delay
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["isCallerAdmin"] });
+        queryClient.clear();
+        window.location.reload();
+      }, 1500);
+    } catch (err) {
+      // __NEEDS_RELOAD__ is handled by onError in the mutation -- don't show as error
+      if (err instanceof Error && err.message === "__NEEDS_RELOAD__") {
+        setTokenSuccess(true);
+      }
+    }
+  };
 
   // Not logged in
   if (!isAuthenticated) {
@@ -492,25 +516,128 @@ export default function AdminPage() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center max-w-md"
+          className="text-center max-w-md w-full"
         >
           <div className="w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-6">
             <Shield className="w-10 h-10 text-destructive" />
           </div>
           <h1 className="font-display text-3xl font-bold text-foreground mb-3">
-            Access Denied
+            Admin Setup
           </h1>
           <p className="font-body text-muted-foreground mb-6">
-            Your account does not have admin privileges. Please contact the site
-            owner for access.
+            Your account is not registered as admin. If you are the site owner,
+            enter the setup token below to claim admin access.
           </p>
+
+          {/* Token entry form */}
+          <div className="bg-card border border-border/60 rounded-2xl p-6 text-left mb-4 shadow-sm">
+            {/* Step-by-step instructions */}
+            <div className="bg-muted/50 border border-border/40 rounded-xl p-4 mb-4">
+              <p className="font-body font-semibold text-sm text-foreground mb-2">
+                How to get your Admin Token:
+              </p>
+              <ol className="font-body text-xs text-muted-foreground space-y-1.5 list-decimal list-inside">
+                <li>
+                  Go to <strong className="text-foreground">caffeine.ai</strong>{" "}
+                  and log in
+                </li>
+                <li>
+                  Open your{" "}
+                  <strong className="text-foreground">
+                    Kalapriya Flower Decoration
+                  </strong>{" "}
+                  project
+                </li>
+                <li>
+                  Click the <strong className="text-foreground">Preview</strong>{" "}
+                  button to open the site
+                </li>
+                <li>
+                  Look at the URL in your browser — copy everything after{" "}
+                  <code className="bg-muted px-1 py-0.5 rounded">
+                    caffeineAdminToken=
+                  </code>
+                </li>
+                <li>Paste that value in the field below</li>
+              </ol>
+            </div>
+
+            <Label
+              htmlFor="admin-token"
+              className="font-body font-medium text-sm mb-2 block"
+            >
+              Admin Setup Token
+            </Label>
+            <Input
+              id="admin-token"
+              type="text"
+              value={adminToken}
+              onChange={(e) => {
+                // Auto-strip accidental leading '=' when pasting
+                setAdminToken(e.target.value.replace(/^=+/, ""));
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && adminToken.trim()) handleClaimAdmin();
+              }}
+              placeholder="Paste your token here…"
+              className="font-body text-sm mb-3"
+              disabled={initializeAdmin.isPending || tokenSuccess}
+            />
+
+            {initializeAdmin.isError &&
+              initializeAdmin.error instanceof Error &&
+              initializeAdmin.error.message !== "__NEEDS_RELOAD__" && (
+                <p className="font-body text-xs text-destructive mb-3">
+                  {initializeAdmin.error.message ||
+                    "Failed to claim admin access. Please check the token and try again."}{" "}
+                  Make sure you copied the token correctly (without the leading
+                  = sign).
+                </p>
+              )}
+
+            {tokenSuccess && (
+              <p className="font-body text-xs text-green-600 mb-3 flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5" />
+                Admin access granted! Refreshing…
+              </p>
+            )}
+
+            <Button
+              onClick={handleClaimAdmin}
+              disabled={
+                !adminToken.trim() || initializeAdmin.isPending || tokenSuccess
+              }
+              className="w-full font-body font-semibold gap-2 text-white"
+              style={{
+                background:
+                  "linear-gradient(135deg, oklch(var(--marigold)), oklch(var(--festival-pink)))",
+              }}
+            >
+              {initializeAdmin.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Shield className="w-4 h-4" />
+              )}
+              {initializeAdmin.isPending
+                ? "Claiming access…"
+                : "Claim Admin Access"}
+            </Button>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-4">
+            <div className="flex-1 h-px bg-border" />
+            <span className="font-body text-xs text-muted-foreground">or</span>
+            <div className="flex-1 h-px bg-border" />
+          </div>
+
           <Button
             variant="outline"
             onClick={() => {
               clear();
               queryClient.clear();
             }}
-            className="font-body"
+            className="font-body w-full"
           >
             Log Out
           </Button>
