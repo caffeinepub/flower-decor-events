@@ -417,25 +417,43 @@ function CategorySection({ category }: { category: EventCategory }) {
 
 export default function AdminPage() {
   const { login, loginStatus, identity, clear } = useInternetIdentity();
-  const { data: isAdmin, isLoading: adminLoading } = useIsCallerAdmin();
+  const {
+    data: isAdmin,
+    isLoading: adminLoading,
+    refetch: refetchAdmin,
+  } = useIsCallerAdmin();
   const { data: categories, isLoading: catsLoading } = useGetCategories();
   const queryClient = useQueryClient();
   const initializeAdmin = useInitializeAdmin();
 
   const [adminToken, setAdminToken] = useState("");
   const [tokenSuccess, setTokenSuccess] = useState(false);
+  const [recheckingAdmin, setRecheckingAdmin] = useState(false);
 
   const isAuthenticated = !!identity;
   const isLoggingIn = loginStatus === "logging-in";
+
+  // Re-check admin status whenever identity changes (e.g. after login)
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Show a brief "verifying" state and then re-check admin status
+      setRecheckingAdmin(true);
+      const timer = setTimeout(async () => {
+        await queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
+        await refetchAdmin();
+        setRecheckingAdmin(false);
+      }, 1200);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, queryClient, refetchAdmin]);
 
   const handleClaimAdmin = async () => {
     try {
       await initializeAdmin.mutateAsync(adminToken);
       setTokenSuccess(true);
       setAdminToken("");
-      // Invalidate admin query and reload after a short delay
+      // Invalidate all queries and reload after a short delay
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ["isCallerAdmin"] });
         queryClient.clear();
         window.location.reload();
       }, 1500);
@@ -495,8 +513,8 @@ export default function AdminPage() {
     );
   }
 
-  // Logged in but checking admin status
-  if (adminLoading) {
+  // Logged in but checking admin status (initial load or re-check after login)
+  if (adminLoading || recheckingAdmin) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center px-4">
         <div className="text-center">
