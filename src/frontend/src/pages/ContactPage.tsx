@@ -20,8 +20,8 @@ const CONTACT_DETAILS = [
   {
     icon: MapPin,
     label: "Address",
-    value: "Bangalore, Karnataka, India",
-    href: "https://maps.google.com/?q=Bangalore,Karnataka,India",
+    value: "Chikkaballapur, Karnataka, India",
+    href: "https://maps.google.com/?q=Chikkaballapur,Karnataka,India",
   },
 ];
 
